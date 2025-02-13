@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = Supabase
+title = NexGen
 
 # (str) Package name
-package.name = Supabase
+package.name = NexGen
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.Supabase
+package.domain = org.NexGen
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -44,10 +44,10 @@ requirements = python3,kivy==2.3.0, https://github.com/kivymd/KivyMD/archive/mas
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
+presplash.filename = %(source.dir)s/assets/img/presplash.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/assets/img/applogo.png
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
