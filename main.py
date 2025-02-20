@@ -13,7 +13,7 @@ from supabase_lib.supabase_auth import *
 #--[Start platform specific code]
 """This code to detect it's Android or not 
 if it's not android than app window size change in android phone size"""
-from kivy.utils import platform
+# from kivy.utils import platform
  
 # if platform != 'android':
 #     from kivy.config import Config
@@ -41,6 +41,7 @@ from libs.uix.baseclass.customers_list import CustomersList
 from libs.uix.baseclass.admission_form_screen import AdmissionFormScreen
 from libs.uix.baseclass.transactions import Transactions
 from libs.uix.baseclass.add_transactions import AddTransactions
+from libs.uix.baseclass.expired_sub import ExpiredCustomersList
 
 
 #--[End Import All Baseclasses from lib.baseclass ]
@@ -146,13 +147,14 @@ class NexGenApp(MDApp):
         # Initialize the screen manager and add screens
         self.screen_manager = Root()
         self.screen_manager.add_widget(Login_Screen())
-        self.screen_manager.add_widget(LandingScreen())
-        self.screen_manager.add_widget(AddTransactions())
-        self.screen_manager.add_widget(AdmissionFormScreen())
         self.screen_manager.add_widget(Transactions())
+        self.screen_manager.add_widget(AddTransactions())
+        self.screen_manager.add_widget(LandingScreen())
+        self.screen_manager.add_widget(AdmissionFormScreen())
         self.screen_manager.add_widget(SeatRegisterScreen())
         self.screen_manager.add_widget(CustomerProfile())
         self.screen_manager.add_widget(CustomersList())
+        self.screen_manager.add_widget(ExpiredCustomersList())
         
         # Add the screen manager and navigation drawer to the layout
         nav_layout.add_widget(self.screen_manager)

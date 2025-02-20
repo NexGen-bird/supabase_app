@@ -48,7 +48,18 @@ class AdmissionFormScreen(MDScreen):
             width_mult=4,
         )
     # contact filter section ------------------------------
-        
+    def on_leave(self):
+        self.full_name = ""
+        self.date_of_birth = ""
+        customer_age=0
+        self.age = str(customer_age)+" years"
+        self.gender = ""
+        self.email_id = ""
+        self.address = ""
+        self.education_qualification = ""
+        self.joining_for = ""
+        self.profile_image = ""  
+        self.contact_number = ""
     def set_item(self, text_item):
         self.contact_number = text_item
         loader = Dialog_cls()

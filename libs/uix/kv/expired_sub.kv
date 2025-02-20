@@ -1,24 +1,24 @@
-<ListItems>:
+<EListItems>:
     theme_bg_color:"Custom"
     divider:True
     md_bg_color:self.theme_cls.transparentColor
     # on_release: print("Test --- >",root.name,root.custid)
-    on_release:app.screen_manager.get_screen("customers_list").get_text(root.custid) 
+    on_release:app.screen_manager.get_screen("expired_list").get_text(root.custid) 
     MDListItemLeadingAvatar:
         source:root.avatar_source
     MDListItemHeadlineText:
         text: root.name
 
     MDListItemSupportingText:
-        text:"Joined On : "+ str(root.join_date)
+        text:"Expired on : "+ str(root.Expired_on)
 
     MDListItemTertiaryText:
         text:root.status
         theme_text_color:"Custom"
         text_color:"#3cb043" if root.status == "Active" else "#ff0f0f"
 
-<CustomersList>:
-    name:"customers_list"
+<ExpiredCustomersList>:
+    name:"expired_list"
     md_bg_color: "#fcfbff"
     MDBoxLayout:
         orientation: "vertical"
@@ -45,6 +45,21 @@
             orientation: 'vertical'
             spacing: dp(10)
             padding: dp(20)
+            MDBoxLayout:
+                adaptive_height: True
+                size_hint: .88,None
+                pos_hint:{"center_x": 0.5}
+                MDButton:
+                    id: back
+                    style: "filled"
+                    pos_hint: {"center_x": 0.5,"center_y": 0.5}
+                    on_release: root.parent.previous_screen()
+
+                    MDButtonText:
+                        text: "Back"
+                MDLabel:
+                    text: " Expired Subcriptions "
+                    pos_hint: {"center_x": .5}
             MDBoxLayout:
                 id: filters
                 adaptive_height: True

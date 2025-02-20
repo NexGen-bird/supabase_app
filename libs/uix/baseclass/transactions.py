@@ -55,7 +55,10 @@ class Transactions(MDScreen):
         else:
             self.set_txns()
 
-
+    def on_leave(self):
+        self.profile_redirect = ""
+        self.ids.rv.data = []
+        self.set_txns()
     def change_lay(self):
         print("Inside Change lay")
         specific_widget = self.ids.get("search_btn")

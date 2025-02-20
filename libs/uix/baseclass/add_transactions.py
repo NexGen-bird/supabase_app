@@ -53,6 +53,26 @@ class AddTransactions(MDScreen):
             print("inside else ")
             self.txn_of="General"
     
+    def on_leave(self):
+        self.txn_of = ""
+        self.receipt_id = ""
+        self.transaction_date = ""
+        self.plan_type = 0
+        self.shift = ""
+        self.amount = ""
+        self.transaction_mode = ""
+        self.transaction_made_by = ""
+        self.transaction_startdate = ""
+        self.transaction_enddate = ""
+        self.transaction_made_to = ""
+        self.transaction_type = ""
+        self.transaction_made_for = ""
+        self.menu = None
+        self.shifts_selected.clear()
+        self.shifts_selected1.clear()
+        self.is_weekend = False
+        self.plantypeid = 0
+    
     def show_qr(self):
         qr = QRDialog_cls()
         qr.open_qr_dlg()
@@ -440,9 +460,24 @@ class AddTransactions(MDScreen):
                                     transaction_for=self.txn_of,
                                     description=self.transaction_made_for,
                                     transaction_made_to= self.transaction_made_to)
+            result = res.split(":")[0]
+            if result.strip()=="Pass":
+                utils.snack(color="green",text="Transaction Submitted Successfully!")
+                self.parent.change_screen("transactions")
+            else:
+                utils.snack(color="red",text= str(res.split(":")[1]))
+
         else:
             print("Inside only insert Transaction ")
             res = insert_addmission(self.addmission_form_data)
+            result = res.split(":")[0]
+            if result.strip()=="Pass":
+                utils.snack(color="green",text="Addmission Submitted Successfully!")
+                self.parent.change_screen("customers_list")
+            else:
+                utils.snack(color="red",text="Addmission Submition Fail!")
+
+
         print(data)
         # except:
         # print("Something went wrong please try after some time or contact admin.")

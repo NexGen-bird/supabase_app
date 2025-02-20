@@ -15,9 +15,11 @@ class Item(MDListItem):
 
 class LandingScreen(MDScreen):
     total_members = StringProperty()
+    expired_count = StringProperty()
     active_members = StringProperty()
     collection_amount = StringProperty()
     expense_amount = StringProperty()
+    pnl_amount = StringProperty()
     morning= StringProperty()
     afternoon= StringProperty()
     evening= StringProperty()
@@ -38,23 +40,23 @@ class LandingScreen(MDScreen):
         isinternet=utils.is_internet_available()
         if isinternet:
             shiftcount = run_sql(shiftwiseactivecount)
+            if shiftcount:
+                # Mapping shift names to dictionary keys
+                shift_mapping = {
+                    "Shift1": "morning",
+                    "Shift2": "afternoon",
+                    "Shift3": "evening",
+                    "Shift4": "night"
+                }
+
+                # Update shifts from shiftcount
+                for x in shiftcount:
+                    shift, count = x['count'].split(":")
+                    if shift in shift_mapping:
+                        self.shifts[shift_mapping[shift]] = count
+                print(self.shifts)
         else:
             utils.snack("red","No Internet Connection..")
-        if shiftcount:
-            # Mapping shift names to dictionary keys
-            shift_mapping = {
-                "Shift1": "morning",
-                "Shift2": "afternoon",
-                "Shift3": "evening",
-                "Shift4": "night"
-            }
-
-            # Update shifts from shiftcount
-            for x in shiftcount:
-                shift, count = x['count'].split(":")
-                if shift in shift_mapping:
-                    self.shifts[shift_mapping[shift]] = count
-            print(self.shifts)
        
         
     def on_enter(self):
@@ -77,7 +79,11 @@ class LandingScreen(MDScreen):
         # print("customer count ---->" ,customer_count[0])
         if customer_count:
             self.total_members = str("0" if customer_count[0]['count']==None else customer_count[0]['count'])
-        collection_query = """select sum(amount) from "Transactions" where transaction_type = 'IN'"""
+        collection_query = """SELECT 
+    SUM(CASE WHEN transaction_type = 'IN' THEN amount ELSE 0 END) AS total_revenue,
+    SUM(CASE WHEN transaction_type = 'OUT' THEN amount ELSE 0 END) AS total_expenses
+        FROM "Transactions"
+        """
         isinternet=utils.is_internet_available()
         if isinternet:
             collection = run_sql(collection_query)
@@ -85,16 +91,8 @@ class LandingScreen(MDScreen):
             utils.snack("red","No Internet Connection..")
             
         if collection:
-            self.collection_amount = str("0" if collection[0]['sum']==None else "{}{}".format("₹", collection[0]["sum"]))
-        expense_query = """select sum(amount) from "Transactions" where transaction_type = 'OUT'"""
-        isinternet=utils.is_internet_available()
-        if isinternet:
-            expense = run_sql(expense_query)
-        else:
-            utils.snack("red","No Internet Connection..")
-        print("expense amount ---->" ,expense[0])
-        if expense:
-            self.expense_amount = str("0" if expense[0]['sum']==None else "{}{}".format("₹",expense[0]["sum"]))
+            self.collection_amount = str("0" if collection[0]['total_revenue']==None else "{}{}".format("₹", collection[0]["total_revenue"]))
+            self.expense_amount = str("0" if collection[0]['total_expenses']==None else "{}{}".format("₹",collection[0]["total_expenses"]))
         active_members_query = """select count(distinct customerid)
                                 from subscription
                                 where isactive=1
@@ -106,7 +104,8 @@ class LandingScreen(MDScreen):
             utils.snack("red","No Internet Connection..")
         if active_members:
             self.active_members = str("0" if active_members[0]['count']==None else active_members[0]['count'])
-        
+        month_start,month_end = utils.get_previous_month_range()
+        self.pnl_amount = str(get_net_profit(month_start,month_end))
         
         self.ids.morningshift.text = self.shifts['morning']
         self.ids.afternoonshift.text = self.shifts['afternoon']
@@ -128,8 +127,20 @@ class LandingScreen(MDScreen):
         else:
             utils.snack("red","No Internet Connection..")
         sorted_data = sorted(expiring_members, key=lambda x: datetime.strptime(x['planexpirydate'], "%Y-%m-%d"), reverse=False)
-        print(expiring_members)
-        print(sorted_data)
+        expired_count = """
+                        select count(distinct customerid)
+                        from subscription
+                        where isactive=0 and customerid not in (select distinct customerid
+                        from subscription
+                        where isactive=1)
+                        """
+        isinternet=utils.is_internet_available()
+        if isinternet:
+            expired_count = run_sql(expired_count)
+            self.expired_count = str("0" if expired_count[0]['count']==None else expired_count[0]['count'])
+        else:
+            utils.snack("red","No Internet Connection..")
+       
 
         for x in sorted_data:
             self.expCard(name=x['name'],expdate=x['planexpirydate'])
@@ -184,7 +195,7 @@ class LandingScreen(MDScreen):
                 orientation="horizontal",
                 elevation= .8,
                 size_hint= (None, None),
-                size= (dp(300), dp(100)),
+                size= (dp(350), dp(100)),
                 padding= "10dp",
                 spacing = "5dp",
                 pos_hint= {"center_x": 0.5},

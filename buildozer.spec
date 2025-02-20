@@ -13,7 +13,7 @@ package.domain = org.NexGen
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,json
+source.include_exts = py,png,jpg,kv,atlas,json,jpeg
 
 # (list) List of inclusions using pattern matching
 source.include_patterns = assets/*
@@ -44,7 +44,7 @@ requirements = python3,kivy==2.3.0, https://github.com/kivymd/KivyMD/archive/mas
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/assets/img/presplash.png
+presplash.filename = %(source.dir)s/assets/img/splash.jpg
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/assets/img/applogo.png

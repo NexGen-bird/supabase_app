@@ -11,25 +11,31 @@ class Login_Screen(MDScreen):
         This method used in development to avoid login 
         """
         pass
-    def login(self, email, password):
-        user = login_with_email_password(email, password)
-        if user:
-            self.auth_token = user.session.access_token
-            # dialog = MDDialog(
-            #     MDDialogHeadlineText(
-            #     text="User Details",
-            #     halign="left",
-            # ),
-            # MDDialogSupportingText(
-            #     text=f"Welcome, User {user.user.email}!",
-            #     halign="left",
-            # ),
-            # )
-            # dialog.open()
-            self.parent.change_screen("land")
-            # self.on_login_success(user["email"])
-        # else:
-        #     utils.snack(color="red",text="Login failed. Please check your credentials.")
+    def on_leave(self):
+        self.ids.Email.text = ""
+        self.ids.Password.text = ""
+    def login(self, email: str, password: str):
+        # Validate input fields
+        if not email.strip():
+            utils.snack(color="red", text="Please enter your email.")
+            return
+        
+        if not password.strip():
+            utils.snack(color="red", text="Please enter your password.")
+            return
+
+        try:
+            user = login_with_email_password(email, password)
+            
+            if user:
+                self.auth_token = user.session.access_token
+                self.parent.change_screen("land")
+            else:
+                utils.snack(color="red", text="Invalid email or password.")
+
+        except Exception as e:
+            utils.snack(color="red", text=f"Login failed: {str(e)}")
+
 
     def on_login_success(self, user_id):
         # Navigate to the next screen or perform other post-login actions
